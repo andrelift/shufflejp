@@ -1,4 +1,4 @@
-```php
+
 <?php
 $name = config('site.name');
 $ticker = array_slice($all, 0, 12);
@@ -341,4 +341,3 @@ $img = $og_image ?? null;
 
 </body>
 </html>
-```
